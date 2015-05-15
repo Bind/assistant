@@ -36,7 +36,7 @@ function openInbox(cb) {
 mailParser.on("end", function(email){
     console.log(email);
 
-    var _text = email.from[0].name.split(" ")[0] + ",\nBugger off.\nI'm not done.\n\nRobot Seth"
+    var _text = email.from[0].name.split(" ")[0] + ",\nBugger off.\nI'm not done.\n\nRoboSeth"
     responder.sendMail({
         subject:email.subject,
         from: config.username,
