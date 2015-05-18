@@ -4,8 +4,31 @@ inspect = require('util').inspect,
 MailParser = require("mailparser").MailParser,
 mailParser = new MailParser(),
 nodemailer = require("nodemailer"),
+async = require("async"),
 email = config.username,
 password = config.password;
+
+var apikey = config.mailchimp_api;
+var MC_FINTECH_LIVE=config.list_id;
+
+var MailChimpAPI = require('mailchimp').MailChimpAPI
+var api;
+    try {
+         api = new MailChimpAPI(apikey, {
+            version: '2.0'
+        });
+    } catch (error) {
+        //console.log(error.message);
+    }
+
+var authorized_emails = [
+    "brooks@fintech.io",
+    "gareth@fintech.io",
+    "travis@fintech.io",
+    "doug@fintech.io"
+]
+
+
 
 
 /* EMAIL TRANSPORTER */
@@ -34,23 +57,58 @@ function openInbox(cb) {
 
 /* PARSES RAW TEXT EMAILS TO JSON */
 mailParser.on("end", function(email){
+    var admin = email.from[0];
+    var _text = ""
+    if (authorized_emails.indexOf(admin.address.toLowerCase()) > -1){
+
+
     console.log(email);
-
-    var _text = email.from[0].name.split(" ")[0] + ",\nBugger off.\nI'm not done.\n\nRoboSeth"
-    responder.sendMail({
-        subject:email.subject,
-        from: config.username,
-        to: email.from[0].address,
-        inReplyTo:email.messageId,
-        references:[email.messageId],
-        text: _text,
-
-    }, function(err, data){
-        if (err) console.log(err);
-        console.log(data);    
-
+    var _subscribers = email.to.map(function(curr){
+        return {address: curr["address"],
+                name: curr["name"]
+                }
     })
+    async.each(_subscribers, function(sub, callback){
+        api.call("lists", "subscribe", {
+                apikey:apikey,
+                id: MC_FINTECH_LIVE,
+                double_optin: false,
+                send_welcome:true,
+                email: {email: sub.address,
+                merge_vars:{
+                    NAME: sub["name"],
+                    NEWS: "Weekly Round Up" 
+                }
+            }}, function(err){
+                if (err) {
+                    console.log(err);
+                    callback(err);
+                    }else{
+                        _text += sub.name + " was added to the FinTech Live Mailinglist\n"
+                callback();
+                }
+            }); 
+                },function(err){
+                    if (err){ 
+                        console.log(err);
+                        console.log("a user was failed to subscribed to mailchimp")
+                        }
+                    });
+                }
+            
+        
+        responder.sendMail({
+            subject:email.subject,
+            from: config.username,
+            to: email.from[0].address,
+            inReplyTo:email.messageId,
+            references:[email.messageId],
+            text: _text,
 
+        }, function(err, data){
+            if (err) console.log(err);
+            console.log(data);    
+        })
 })
 
 
