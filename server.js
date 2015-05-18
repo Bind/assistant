@@ -61,9 +61,6 @@ mailParser.on("end", function(email){
     var admin = email.from[0];
     var _text = ""
     if (authorized_emails.indexOf(admin.address.toLowerCase()) > -1){
-
-
-    console.log(email);
     var _subscribers = email.to.map(function(curr){
         return {address: curr["address"],
                 name: curr["name"]
@@ -85,14 +82,14 @@ mailParser.on("end", function(email){
                     console.log(err);
                     callback(err);
                     }else{
-                        _text += sub.name + " was added to the FinTech Live Mailinglist\n"
+                        var _t = sub.name + " was added to the FinTech Live Mailinglist\n";
+                        _text += _t;
                 callback();
                 }
             }); 
                 },function(err){
                     if (err){ 
                         console.log(err);
-                        console.log("a user was failed to subscribed to mailchimp")
                         }
                     });
                 }
@@ -117,8 +114,6 @@ imap.once('ready', function() {
   openInbox(function(err, box) {
     if (err) throw err;
         imap.on("mail", function(numOfNewMessages){
-            console.log("new message");
-            console.log(numOfNewMessages);
             var f = imap.seq.fetch('*',{
                 markSeen: true,
                 bodies: '',
