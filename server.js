@@ -4,7 +4,7 @@ inspect = require('util').inspect,
 MailParser = require("mailparser").MailParser,
 mailParser = new MailParser(),
 nodemailer = require("nodemailer"),
-async = require("async"),;
+async = require("async");
 
 email = config.username || process.env.username;
 password = config.password ||process.env.password;
