@@ -4,12 +4,13 @@ inspect = require('util').inspect,
 MailParser = require("mailparser").MailParser,
 mailParser = new MailParser(),
 nodemailer = require("nodemailer"),
-async = require("async"),
-email = config.username,
-password = config.password;
+async = require("async"),;
 
-var apikey = config.mailchimp_api;
-var MC_FINTECH_LIVE=config.list_id;
+email = config.username || process.env.username;
+password = config.password ||process.env.password;
+
+var apikey = config.mailchimp_api || process.env.m_api;
+var MC_FINTECH_LIVE=config.list_id || process.env.list_id;
 
 var MailChimpAPI = require('mailchimp').MailChimpAPI
 var api;
