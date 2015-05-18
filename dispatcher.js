@@ -73,7 +73,6 @@ dispatcher.on("addSubscribers", function(email, responder, subscribers){
                 apikey:apikey,
                 id: MC_FINTECH_LIVE,
                 double_optin: false,
-                send_welcome:true,
                 email: {email: sub.address},
                 merge_vars:{
                     NAME: sub["name"],
