@@ -1,4 +1,4 @@
-var config = require("config.js");
+var config = require("./config.js");
 var Imap = require("imap"),
 inspect = require('util').inspect,
 MailParser = require("mailparser").MailParser,
