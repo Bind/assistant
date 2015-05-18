@@ -74,7 +74,7 @@ dispatcher.on("addSubscribers", function(email, responder, subscribers){
                 id: MC_FINTECH_LIVE,
                 double_optin: false,
                 send_welcome:true,
-                email: {email: sub.address,
+                email: sub.address,
                 merge_vars:{
                     NAME: sub["name"],
                     NEWS: "Weekly Round Up" 
