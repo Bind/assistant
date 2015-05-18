@@ -59,16 +59,24 @@ function openInbox(cb) {
 
 /* PARSES RAW TEXT EMAILS TO JSON */
 mailParser.on("end", function(email){
+    //console.log(email);
     var admin = email.from[0];
+    console.log("=====================================");
+    //console.log(email);
+
     var _text = "";
+
     if (authorized_emails.indexOf(admin.address.toLowerCase()) > -1){
+       // console.log("AUTHORAIZED USER")
     var _subscribers = email.to.map(function(curr){
         return {address: curr["address"],
                 name: curr["name"]
                 }
     })
+ 
     async.each(_subscribers, function(sub, callback){
         var _sub = sub;
+        //console.log(sub)
         api.call("lists", "subscribe", {
                 apikey:apikey,
                 id: MC_FINTECH_LIVE,
@@ -80,13 +88,22 @@ mailParser.on("end", function(email){
                     NEWS: "Weekly Round Up" 
                 }
             }}, function(err){
+                //console.log(_text)
                 if (err) {
                     console.log(err);
-                    _t += util.inspect(err);
+                    var _t = ""
+                    if (sub.name) {_t = _sub.name + ' ' +  err.message}
+                            else {_t = _sub.address + ' ' + err.message}
+                    _text += _t
+                    //console.log("TEXT:" +_text);
                     callback(err);
                     }else{
-                        var _t = _sub.name + " was added to the FinTech Live Mailinglist\n";
+                        var _t; 
+                        if (sub.name) {_t = _sub.name + " was added to the FinTech Live Mailinglist\n"}
+                            else{_t = _sub.address + " was added to the FinTech Live Mailinglist\n"}
+                        //console.log(_sub.name)
                         _text += _t;
+                       // console.log("TEXT:" +_text)
                 callback();
                 }
             }); 
@@ -94,9 +111,8 @@ mailParser.on("end", function(email){
                     if (err){ 
                         console.log(err);
                         }
-                    });
-                }
-            
+
+       // console.log(_text);
         
         responder.sendMail({
             subject:email.subject,
@@ -104,12 +120,21 @@ mailParser.on("end", function(email){
             to: email.from[0].address,
             inReplyTo:email.messageId,
             references:[email.messageId],
-            text: _text,
+            text: _text
 
         }, function(err, data){
             if (err) console.log(err);
-            console.log(data);    
+            //console.log(data);    
         })
+
+
+
+
+
+                    });
+                }
+                
+
 })
 
 
