@@ -1,5 +1,6 @@
 var config = require("./config.js");
 var Imap = require("imap"),
+util = require("util"),
 inspect = require('util').inspect,
 MailParser = require("mailparser").MailParser,
 mailParser = new MailParser(),
@@ -59,7 +60,7 @@ function openInbox(cb) {
 /* PARSES RAW TEXT EMAILS TO JSON */
 mailParser.on("end", function(email){
     var admin = email.from[0];
-    var _text = ""
+    var _text = "";
     if (authorized_emails.indexOf(admin.address.toLowerCase()) > -1){
     var _subscribers = email.to.map(function(curr){
         return {address: curr["address"],
@@ -67,6 +68,7 @@ mailParser.on("end", function(email){
                 }
     })
     async.each(_subscribers, function(sub, callback){
+        var _sub = sub;
         api.call("lists", "subscribe", {
                 apikey:apikey,
                 id: MC_FINTECH_LIVE,
@@ -80,9 +82,10 @@ mailParser.on("end", function(email){
             }}, function(err){
                 if (err) {
                     console.log(err);
+                    _t += util.inspect(err);
                     callback(err);
                     }else{
-                        var _t = sub.name + " was added to the FinTech Live Mailinglist\n";
+                        var _t = _sub.name + " was added to the FinTech Live Mailinglist\n";
                         _text += _t;
                 callback();
                 }
