@@ -79,7 +79,7 @@ dispatcher.on("addSubscribers", function(email, responder, subscribers){
                     NAME: sub["name"],
                     NEWS: "Weekly Round Up" 
                 }
-            }}, function(err){
+            }, function(err){
                 //console.log(_text)
                 if (err) {
                     console.log(err);
