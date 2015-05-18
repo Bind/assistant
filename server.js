@@ -1,4 +1,8 @@
-var config = require("./config");
+var config;
+
+if (process.env.ENV != 'PRODUCTION'){
+    config = require("config.json")
+}
 var Imap = require("imap"),
 inspect = require('util').inspect,
 MailParser = require("mailparser").MailParser,
