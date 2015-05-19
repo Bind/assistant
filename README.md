@@ -8,5 +8,4 @@ They CC a robot, the robot creates invitiations to the platform, and sends them 
 The robot than follows up with the CC'er for more detailed information, what permissions should they have for which deal, etc. 
 
 #Setup
-npm install 
-checkout blank_config.js for an idea of the information it expects
+npm install - checkout blank_config.js for an idea of the information it expects
