@@ -52,6 +52,7 @@ dispatcher.on("newEmail", function(email, responder){
 })
 
 dispatcher.on('directAdd', function(email, responder){
+    console.log("EMAILED DIRECTLY");
     var _subscribers = email.text.split("\n").map(function(curr){
             return {
                  name: curr.split(' ').splice(-1, 1).join(' '),
@@ -65,15 +66,14 @@ dispatcher.on('directAdd', function(email, responder){
 
 
 dispatcher.on("addSubscribers", function(email, responder, subscribers){
-    var _text = "";
-    async.each(subscribers, function(sub, callback){
+    async.map(subscribers, function(sub, callback){
         var _sub = sub;
         //console.log(sub)
         api.call("lists", "subscribe", {
                 apikey:apikey,
                 id: MC_FINTECH_LIVE,
                 double_optin: false,
-                email: {email: sub.address},
+                email: {email: _sub.address},
                 merge_vars:{
                     NAME: sub["name"],
                     NEWS: "Weekly Round Up" 
@@ -83,25 +83,23 @@ dispatcher.on("addSubscribers", function(email, responder, subscribers){
                 if (err) {
                     console.log(err);
                     var _t = ""
-                    if (sub.name) {_t = _sub.name + ' ' +  err.message}
+                    if (_sub.name) {_t = _sub.name + ' ' +  err.message}
                             else {_t = _sub.address + ' ' + err.message}
-                    _text += _t
+                    
+                    callback(null, _t);
                     //console.log("TEXT:" +_text);
-                    callback(err);
                     }else{
                         var _t; 
-                        if (sub.name) {_t = _sub.name + " was added to the FinTech Live Mailinglist\n"}
-                            else{_t = _sub.address + " was added to the FinTech Live Mailinglist\n"}
-                        //console.log(_sub.name)
-                        _text += _t;
-                       // console.log("TEXT:" +_text)
-                callback();
+                        if (sub.name) {_t = _sub.name + " was added to the FinTech Live Mailinglist"}
+                            else{_t = _sub.address + " was added to the FinTech Live Mailinglist"}
+                        callback(null, _t);
                 }
             }); 
-                },function(err){
+                },function(err, results){
                     if (err){ 
                         console.log(err);
                         }
+                        var _text = results.join("\n");
        // console.log(_text);
         responder.sendMail({
             subject:email.subject,
@@ -123,14 +121,14 @@ dispatcher.on("addSubscribers", function(email, responder, subscribers){
 
 
 dispatcher.on('CC', function(email, responder){
-
+    console.log("CC'ed");
 
     var _subscribers = email.to.map(function(curr){
         return {address: curr["address"],
                 name: curr["name"]
                 }
     })
-
+    console.log(_subscribers);
     dispatcher.emit("addSubscribers", email, responder, _subscribers)
 
     /* CC'ed on an email chain
