@@ -3,7 +3,7 @@ var EE = require("events").EventEmitter,
 
 var config = require("./config.js");
 
-var MC_FINTECH_LIVE=config.list_id || process.env.list_id;
+var MC_FINTECH_LIVE= config.list_id || process.env.list_id;
 var MailChimpAPI = require('mailchimp').MailChimpAPI
 var apikey = config.mailchimp_api || process.env.m_api;
 
@@ -100,7 +100,6 @@ dispatcher.on("addSubscribers", function(email, responder, subscribers){
                         console.log(err);
                         }
                         var _text = results.join("\n");
-       // console.log(_text);
         responder.sendMail({
             subject:email.subject,
             from: _u,
@@ -111,10 +110,8 @@ dispatcher.on("addSubscribers", function(email, responder, subscribers){
 
         }, function(err, data){
             if (err) console.log(err);
-            //console.log(data);    
         })
-    });/*END CC'ed on an email chain*/
-
+    });
 
 })
 
@@ -130,59 +127,6 @@ dispatcher.on('CC', function(email, responder){
     })
     console.log(_subscribers);
     dispatcher.emit("addSubscribers", email, responder, _subscribers)
-
-    /* CC'ed on an email chain
-    async.each(_subscribers, function(sub, callback){
-        var _sub = sub;
-        //console.log(sub)
-        api.call("lists", "subscribe", {
-                apikey:apikey,
-                id: MC_FINTECH_LIVE,
-                double_optin: false,
-                send_welcome:true,
-                email: {email: sub.address,
-                merge_vars:{
-                    NAME: sub["name"],
-                    NEWS: "Weekly Round Up" 
-                }
-            }}, function(err){
-                //console.log(_text)
-                if (err) {
-                    console.log(err);
-                    var _t = ""
-                    if (sub.name) {_t = _sub.name + ' ' +  err.message}
-                            else {_t = _sub.address + ' ' + err.message}
-                    _text += _t
-                    //console.log("TEXT:" +_text);
-                    callback(err);
-                    }else{
-                        var _t; 
-                        if (sub.name) {_t = _sub.name + " was added to the FinTech Live Mailinglist\n"}
-                            else{_t = _sub.address + " was added to the FinTech Live Mailinglist\n"}
-                        //console.log(_sub.name)
-                        _text += _t;
-                       // console.log("TEXT:" +_text)
-                callback();
-                }
-            }); 
-                },function(err){
-                    if (err){ 
-                        console.log(err);
-                        }
-       // console.log(_text);
-        responder.sendMail({
-            subject:email.subject,
-            from: config.username,
-            to: _u,
-            inReplyTo:email.messageId,
-            references:[email.messageId],
-            text: _text
-
-        }, function(err, data){
-            if (err) console.log(err);
-            //console.log(data);    
-        })
-    });END CC'ed on an email chain*/
 
 })
 

@@ -37,7 +37,6 @@ function openInbox(cb) {
 
 /* PARSES RAW TEXT EMAILS TO JSON */
 mailParser.on("end", function(email){
-    console.log("=====================================");
     dispatcher.emit("newEmail", email, responder);
     //console.log(email);
 
